@@ -9,7 +9,24 @@ import tarifaRoutes from './src/routes/TarifasRoutes.js'
 
 const app = express()
 
-app.use(cors())
+// Configurar CORS para producción
+const allowedOrigins = [
+  'http://localhost:5173', // Desarrollo local
+  'http://localhost:3000',
+  process.env.FRONTEND_URL // URL del frontend en producción (Vercel)
+].filter(Boolean)
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error('CORS no permitido'))
+    }
+  },
+  credentials: true
+}))
+
 app.use(express.json())
 
 app.use('/api/departamentos', departamentoRoutes)
